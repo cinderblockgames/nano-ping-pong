@@ -18,6 +18,7 @@ ENV SeedFile=/run/secrets/nano-ping.seed
 ENV TickSeconds=1
 ENV Node
 ENV WorkServer
+ENV DonationAddress
 
 VOLUME /run/logs
 

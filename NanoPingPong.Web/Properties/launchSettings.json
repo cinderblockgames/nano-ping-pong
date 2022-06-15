@@ -12,10 +12,11 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "SeedFile": "/run/secrets/nano-ping.seed",
-        "Context": "nano",
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
+        "Context": "nano",
+        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation",
+        "DonationAddress": "nano_1gqwww84fw9ke6oz6jj3gocbtokd31wj9hz46cqx7h6b644zgje8343fwwdu",
+        "SeedFile": "/run/secrets/nano-ping.seed"
       }
     },
     "NanoPingPong.Web": {
@@ -25,8 +26,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
       },
-      "dotnetRunMessages": "true",
-      "applicationUrl": "http://localhost:5000"
+      "applicationUrl": "http://localhost:2022",
+      "dotnetRunMessages": "true"
     }
   }
 }

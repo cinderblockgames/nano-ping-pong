@@ -22,11 +22,6 @@ namespace NanoPingPong
                 };
             });
 
-            services.AddSingleton(provider => {
-                var env = provider.GetRequiredService<IContext>();
-                return new Account(env.Seed, 0);
-            });
-
             services.AddSingleton<WrappedAccount>();
             services.AddSingleton<Listener>();
             return services;
