@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using DockerHax.IO;
 using Nano.Net;
 using Nano.Net.Extensions;
 using static NanoPingPong.Constants;
@@ -21,7 +22,7 @@ namespace NanoPingPong
         }
 
         private static bool _running = false;
-        private static object _locker = new();
+        private static readonly object _locker = new();
 
         public void Tick()
         {
@@ -35,6 +36,10 @@ namespace NanoPingPong
                         try
                         {
                             Process().GetAwaiter().GetResult();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log(ex.Message);
                         }
                         finally
                         {
@@ -59,6 +64,7 @@ namespace NanoPingPong
             var blocks = pending?.PendingBlocks?.Select(block => block.Value) ?? Enumerable.Empty<ReceivableBlock>();
             foreach (var block in blocks)
             {
+                Log("Ping received.");
                 try
                 {
                     if (Amount.FromRaw(block.Amount).Nano <= 1)
@@ -78,7 +84,7 @@ namespace NanoPingPong
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Log(ex.Message);
                 }
             }
         }
@@ -89,6 +95,7 @@ namespace NanoPingPong
             {
                 await CacheReceiveWork();
             }
+            Log("Processing ping.");
             var receive = Block.CreateReceiveBlock(Account, block, _cache.Work);
             await Clients.Node.ProcessAsync(receive);
             await CacheSendWork();
@@ -100,6 +107,7 @@ namespace NanoPingPong
             {
                 await CacheSendWork();
             }
+            Log("Processing pong.");
             var send = Block.CreateSendBlock(
                 Account,
                 sender,
@@ -112,11 +120,13 @@ namespace NanoPingPong
         private async Task CacheReceiveWork()
         {
             _cache = new Cache(await GenerateWork(Difficulty.Receive), false);
+            Log("Ready to process ping.");
         }
 
         private async Task CacheSendWork()
         {
             _cache = new Cache(await GenerateWork(Difficulty.Send), true);
+            Log("Ready to pong.");
         }
 
         private async Task<string> GenerateWork(string difficulty)
@@ -127,6 +137,15 @@ namespace NanoPingPong
                 difficulty
             );
             return work?.Work;
+        }
+
+        private static void Log(params string[] messages)
+        {
+            try
+            {
+                File.AppendAllLines(Locations.Log, messages);
+            }
+            catch { }
         }
 
         private class Cache

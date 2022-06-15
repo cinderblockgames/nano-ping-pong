@@ -12,6 +12,7 @@
 #else
             public const string Node = "http://nano_node:7076";
 #endif
+            public const string Log = "/run/logs/output.log";
         }
 
         public static class Difficulty
