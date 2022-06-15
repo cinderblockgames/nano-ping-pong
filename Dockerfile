@@ -11,7 +11,7 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 
 WORKDIR /app
-COPY --from=build-env /app/WaxRentals/out .
+COPY --from=build-env /app/NanoPingPong/out .
 
 ENTRYPOINT [ "dotnet" ]
 
