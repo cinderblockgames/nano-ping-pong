@@ -1,4 +1,4 @@
-﻿namespace NanoPingPong
+﻿namespace NanoPingPong.Shared.Config
 {
     public class NanoSeed
     {

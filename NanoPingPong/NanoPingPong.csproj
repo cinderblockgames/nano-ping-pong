@@ -12,4 +12,8 @@
     <PackageReference Include="Nano.Net" Version="1.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NanoPingPong.Shared\NanoPingPong.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

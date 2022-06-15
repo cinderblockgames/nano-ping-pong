@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DockerHax.IO;
 using Nano.Net;
 using Nano.Net.Extensions;
+using NanoPingPong.Shared.Config;
 
 namespace NanoPingPong
 {
@@ -13,9 +14,9 @@ namespace NanoPingPong
 
         private Account Account { get; }
         private RpcClients Clients { get; }
-        private Context Context { get; }
+        private IContext Context { get; }
 
-        public WrappedAccount(Account account, RpcClients clients, Context context)
+        public WrappedAccount(Account account, RpcClients clients, IContext context)
         {
             Account = account;
             Clients = clients;

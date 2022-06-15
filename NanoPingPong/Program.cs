@@ -6,14 +6,13 @@ namespace NanoPingPong
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             Console.WriteLine("Starting up; please wait.");
 
-            var provider = new ServiceCollection().AddDependencies().BuildServiceProvider();
-
-            var listener = provider.GetRequiredService<Listener>();
-            listener.Start(TimeSpan.FromSeconds(1));
+            var listener = new ServiceCollection().AddDependencies()
+                                                  .BuildServiceProvider()
+                                                  .GetRequiredService<Listener>();
             
             var stop = new ManualResetEventSlim();
             AppDomain.CurrentDomain.ProcessExit += (_, _) => stop.Set();

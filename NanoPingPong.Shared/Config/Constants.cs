@@ -1,6 +1,6 @@
-﻿namespace NanoPingPong
+﻿namespace NanoPingPong.Shared.Config
 {
-    public static class Constants
+    internal static class Constants
     {
 
         public static class EnvironmentVariables

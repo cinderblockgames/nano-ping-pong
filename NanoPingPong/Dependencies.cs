@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Nano.Net;
+using NanoPingPong.Shared.Config;
+using SharedDependencies = NanoPingPong.Shared.Config.Dependencies;
 
 namespace NanoPingPong
 {
@@ -8,10 +10,11 @@ namespace NanoPingPong
 
         public static IServiceCollection AddDependencies(this IServiceCollection services)
         {
-            services.AddSingleton<Context>();
+            SharedDependencies.AddDependencies(services);
+
             services.AddSingleton(provider =>
             {
-                var env = provider.GetRequiredService<Context>();
+                var env = provider.GetRequiredService<IContext>();
                 return new RpcClients
                 {
                     Node = new RpcClient(env.Node),
@@ -20,7 +23,7 @@ namespace NanoPingPong
             });
 
             services.AddSingleton(provider => {
-                var env = provider.GetRequiredService<Context>();
+                var env = provider.GetRequiredService<IContext>();
                 return new Account(env.Seed, 0);
             });
 
