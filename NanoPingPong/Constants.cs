@@ -3,22 +3,35 @@
     public static class Constants
     {
 
+        public static class EnvironmentVariables
+        {
+            public const string Context = "Context";
+            public const string SeedFile = "SeedFile";
+            public const string TickSeconds = "TickSeconds";
+            public const string Node = "Node";
+            public const string WorkServer = "WorkServer";
+        }
+
         public static class Locations
         {
-            public const string Seed = "/run/secrets/nano-ping.seed";
-            public const string WorkServer = "http://work-server-01.squeakers.space:7077";
-#if DEBUG
-            public const string Node = "http://host-x86-01:17076";
-#else
-            public const string Node = "http://nano_node:7076";
-#endif
             public const string Log = "/run/logs/output.log";
         }
 
-        public static class Difficulty
+        public static class Protocols
         {
-            public const string Send = "fffffff800000000";
-            public const string Receive = "fffffe0000000000";
+            public static class Nano
+            {
+                public const string Prefix = "nano";
+                public const string SendDifficulty = "fffffff800000000";
+                public const string ReceiveDifficulty = "fffffe0000000000";
+            }
+
+            public static class Banano
+            {
+                public const string Prefix = "ban";
+                public const string SendDifficulty = "fffffe0000000000";
+                public const string ReceiveDifficulty = "fffffe0000000000";
+            }
         }
 
     }

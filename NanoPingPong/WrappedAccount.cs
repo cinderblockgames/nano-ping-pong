@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using DockerHax.IO;
 using Nano.Net;
 using Nano.Net.Extensions;
-using static NanoPingPong.Constants;
 
 namespace NanoPingPong
 {
@@ -14,11 +13,13 @@ namespace NanoPingPong
 
         private Account Account { get; }
         private RpcClients Clients { get; }
+        private Context Context { get; }
 
-        public WrappedAccount(Account account, RpcClients clients)
+        public WrappedAccount(Account account, RpcClients clients, Context context)
         {
             Account = account;
             Clients = clients;
+            Context = context;
         }
 
         private static bool _running = false;
@@ -119,13 +120,13 @@ namespace NanoPingPong
 
         private async Task CacheReceiveWork()
         {
-            _cache = new Cache(await GenerateWork(Difficulty.Receive), false);
+            _cache = new Cache(await GenerateWork(Context.ReceiveDifficulty), false);
             Log("Ready to process ping.");
         }
 
         private async Task CacheSendWork()
         {
-            _cache = new Cache(await GenerateWork(Difficulty.Send), true);
+            _cache = new Cache(await GenerateWork(Context.SendDifficulty), true);
             Log("Ready to pong.");
         }
 
@@ -139,11 +140,11 @@ namespace NanoPingPong
             return work?.Work;
         }
 
-        private static void Log(params string[] messages)
+        private void Log(params string[] messages)
         {
             try
             {
-                File.AppendAllLines(Locations.Log, messages);
+                File.AppendAllLines(Context.LogFile, messages);
             }
             catch { }
         }

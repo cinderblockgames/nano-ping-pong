@@ -13,6 +13,13 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /app
 COPY --from=build-env /app/NanoPingPong/out .
 
-ENTRYPOINT [ "dotnet" ]
+ENV Context=nano
+ENV SeedFile=/run/secrets/nano-ping.seed
+ENV TickSeconds=1
+ENV Node
+ENV WorkServer
 
+VOLUME /run/logs
+
+ENTRYPOINT [ "dotnet" ]
 CMD [ "NanoPingPong.dll" ]
