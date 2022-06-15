@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 using DockerHax.IO;
 using Nano.Net;
@@ -62,6 +64,8 @@ namespace NanoPingPong
 
             var pending = await Clients.Node.PendingBlocksAsync(Account.Address, int.MaxValue);
             var blocks = pending?.PendingBlocks?.Select(block => block.Value) ?? Enumerable.Empty<ReceivableBlock>();
+            Stopwatch timer = new();
+            timer.Start();
             foreach (var block in blocks)
             {
                 Log("Ping received.");
@@ -69,13 +73,13 @@ namespace NanoPingPong
                 {
                     if (Amount.FromRaw(block.Amount).Nano <= 1)
                     {
-                        await Return(block.Source, BigInteger.Parse(block.Amount));
+                        await Return(block.Source, BigInteger.Parse(block.Amount), timer);
                         await Receive(block);
                     }
                     else
                     {
                         await Receive(block);
-                        await Return(block.Source, BigInteger.Parse(block.Amount));
+                        await Return(block.Source, BigInteger.Parse(block.Amount), timer);
                     }
                     if (_cache == null || !_cache.Sendable)
                     {
@@ -101,8 +105,9 @@ namespace NanoPingPong
             await CacheSendWork();
         }
 
-        public async Task Return(string sender, BigInteger nano)
+        public async Task Return(string sender, BigInteger nano, Stopwatch timer)
         {
+            const int DELAY = 30;
             if (_cache == null || !_cache.Sendable)
             {
                 await CacheSendWork();
@@ -113,6 +118,10 @@ namespace NanoPingPong
                 sender,
                 new Amount(nano),
                 _cache.Work);
+            if (timer.Elapsed < TimeSpan.FromSeconds(DELAY))
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(DELAY) - timer.Elapsed);
+            }
             await Clients.Node.ProcessAsync(send);
             await CacheReceiveWork();
         }
