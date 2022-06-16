@@ -19,9 +19,139 @@ The container can be configured using the following environment variables:
 **Node and WorkServer are required for every container running the listener.**
 
 ## Seed File
+```
+{
+  "seed": "YOUR_SEED_HERE"
+}
+```
 
 ## Docker Compose Examples
+These examples assume you are using traefik as a reverse proxy, because it's dope.  But you do you.
+They also assume you are running on Docker Swarm Mode.
 
 ### Bundled
+```
+version: '3.8'
+
+services:
+
+  node:
+    image: 'bananocoin/banano:V##'
+    networks:
+      - banano
+    ... clipped for brevity ...
+    
+  monitor:
+    image: 'nanotools/nanonodemonitor:v##'
+    networks:
+      - traefik
+      - banano
+    ... clipped for brevity ...
+    
+  ping:
+    image: 'cinderblockgames/nano-ping-pong:1.0.0'
+    secrets:
+      - banano-ping.seed
+    volumes:
+      - '/run/homelab/banano/ping-logs:/run/logs'
+    environment:
+      - 'Context=banano'
+      - 'SeedFile=/run/secrets/banano-ping.seed'
+      - 'Node=http://node:7072'
+      - 'WorkServer=http://node:7072'
+      - 'DonationAddress=ban_3s9c389jsom8gqsp8zbeampfi7kpipdnzmp1rkbnzstemursdsopsz3h8mg1'
+    networks:
+      - traefik
+      - banano
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - 'traefik.enable=true'
+        - 'traefik.docker.network=traefik'
+        - 'traefik.http.routers.banano-ping.rule=Host(`ping.banano.kga.earth`)'
+        - 'traefik.http.routers.banano-ping.entrypoints=web-secure'
+        - 'traefik.http.routers.banano-ping.tls'
+        - 'traefik.http.services.banano-ping.loadbalancer.server.port=2022'
+
+networks:
+  traefik:
+    external: true
+  banano:
+    external: true
+
+secrets:
+  banano-ping.seed:
+    external: true
+```
 
 ### Separated
+```
+version: '3.8'
+
+services:
+
+  node:
+    image: 'bananocoin/banano:V##'
+    networks:
+      - banano
+    ... clipped for brevity ...
+    
+  monitor:
+    image: 'nanotools/nanonodemonitor:v##'
+    networks:
+      - traefik
+      - banano
+    ... clipped for brevity ...
+    
+  ping-listener:
+    image: 'cinderblockgames/nano-ping-pong:1.0.0'
+    command: dotnet /app/listener/NanoPingPong.dll
+    secrets:
+      - banano-ping.seed
+    volumes:
+      - '/run/homelab/banano/ping-logs:/run/logs'
+    environment:
+      - 'Context=banano'
+      - 'SeedFile=/run/secrets/banano-ping.seed'
+      - 'Node=http://node:7072'
+      - 'WorkServer=http://node:7072'
+    networks:
+      - banano
+    deploy:
+      mode: replicated
+      replicas: 1
+    
+  ping-web:
+    image: 'cinderblockgames/nano-ping-pong:1.0.0'
+    command: dotnet /app/web/NanoPingPong.Web.dll
+    secrets:
+      - banano-ping.seed
+    environment:
+      - 'Context=banano'
+      - 'SeedFile=/run/secrets/banano-ping.seed'
+      - 'DonationAddress=ban_3s9c389jsom8gqsp8zbeampfi7kpipdnzmp1rkbnzstemursdsopsz3h8mg1'
+    networks:
+      - traefik
+      - banano
+    deploy:
+      mode: replicated
+      replicas: 2
+      labels:
+        - 'traefik.enable=true'
+        - 'traefik.docker.network=traefik'
+        - 'traefik.http.routers.banano-ping.rule=Host(`ping.banano.kga.earth`)'
+        - 'traefik.http.routers.banano-ping.entrypoints=web-secure'
+        - 'traefik.http.routers.banano-ping.tls'
+        - 'traefik.http.services.banano-ping.loadbalancer.server.port=2022'
+
+networks:
+  traefik:
+    external: true
+  banano:
+    external: true
+
+secrets:
+  banano-ping.seed:
+    external: true
+```
