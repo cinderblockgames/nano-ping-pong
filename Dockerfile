@@ -45,4 +45,4 @@ ENV WorkServer=
 # Can separate the two by overriding the command with one of the below:
 # dotnet /app/listener/NanoPingPong.dll
 # dotnet /app/web/NanoPingPong.Web.dll
-CMD [ "." "docker-entrypoint.sh" ]
+CMD [ "docker-entrypoint.sh" ]
