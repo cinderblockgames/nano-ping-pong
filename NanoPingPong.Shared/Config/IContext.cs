@@ -1,11 +1,12 @@
-﻿namespace NanoPingPong.Shared.Config
+﻿using Nano.Net;
+
+namespace NanoPingPong.Shared.Config
 {
     public interface IContext
     {
 
         string LogFile { get; }
         string Seed { get; }
-        string Address { get; }
         int TickMilliseconds { get; }
         string Node { get; }
         string WorkServer { get; }
@@ -15,6 +16,7 @@
         string DonationAddress { get; }
         string Protocol { get; }
         string LinkPrefix { get; }
+        Account Account { get; }
 
     }
 }

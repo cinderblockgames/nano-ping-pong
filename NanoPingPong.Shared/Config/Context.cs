@@ -11,9 +11,9 @@ namespace NanoPingPong.Shared.Config
     internal class Context : IContext
     {
 
+        public bool Banano => BananoValue.GetValue();
         public string LogFile => LogFileValue.GetValue();
         public string Seed => SeedValue.GetValue();
-        public string Address => AddressValue.GetValue();
         public int TickMilliseconds => TickMillisecondsValue.GetValue();
         public string Node => NodeValue.GetValue();
         public string WorkServer => WorkServerValue.GetValue();
@@ -23,12 +23,12 @@ namespace NanoPingPong.Shared.Config
         public string DonationAddress => DonationAddressValue.GetValue();
         public string Protocol => ProtocolValue.GetValue();
         public string LinkPrefix => LinkPrefixValue.GetValue();
+        public Account Account => AccountValue.GetValue();
 
         private IDictionary<string, string> Env { get; }
         private JustInTimeValue<bool> BananoValue { get; }
         private JustInTimeValue<string> LogFileValue { get; }
         private JustInTimeValue<string> SeedValue { get; }
-        private JustInTimeValue<string> AddressValue { get; }
         private JustInTimeValue<int> TickMillisecondsValue { get; }
         private JustInTimeValue<string> NodeValue { get; }
         private JustInTimeValue<string> WorkServerValue { get; }
@@ -38,24 +38,25 @@ namespace NanoPingPong.Shared.Config
         private JustInTimeValue<string> DonationAddressValue { get; }
         private JustInTimeValue<string> ProtocolValue { get; }
         private JustInTimeValue<string> LinkPrefixValue { get; }
+        private JustInTimeValue<Account> AccountValue { get; }
 
-        public Context(Account account)
+        public Context()
         {
             Env = GetEnvironmentVariables();
 
             BananoValue            = Build(() => string.Equals(Env[Names.Context], nameof(Protocols.Banano)));
             LogFileValue           = Build(() => Locations.Log);
             SeedValue              = Build(() => JObject.Parse(File.ReadAllText(Env[Names.SeedFile])).ToObject<NanoSeed>().Seed);
-            AddressValue           = Build(() => account.Address);
             TickMillisecondsValue  = Build(() => int.Parse(Env[Names.TickSeconds]) * 1000);
             NodeValue              = Build(() => Env[Names.Node]);
             WorkServerValue        = Build(() => Env[Names.WorkServer]);
-            PrefixValue            = Build(() => BananoValue.GetValue() ? Protocols.Banano.Prefix : Protocols.Nano.Prefix);
-            SendDifficultyValue    = Build(() => BananoValue.GetValue() ? Protocols.Banano.SendDifficulty : Protocols.Nano.SendDifficulty);
-            ReceiveDifficultyValue = Build(() => BananoValue.GetValue() ? Protocols.Banano.ReceiveDifficulty : Protocols.Nano.ReceiveDifficulty);
+            PrefixValue            = Build(() => Banano ? Protocols.Banano.Prefix : Protocols.Nano.Prefix);
+            SendDifficultyValue    = Build(() => Banano ? Protocols.Banano.SendDifficulty : Protocols.Nano.SendDifficulty);
+            ReceiveDifficultyValue = Build(() => Banano ? Protocols.Banano.ReceiveDifficulty : Protocols.Nano.ReceiveDifficulty);
             DonationAddressValue   = Build(() => Env[Names.DonationAddress]);
-            ProtocolValue          = Build(() => BananoValue.GetValue() ? nameof(Protocols.Banano) : nameof(Protocols.Nano));
-            LinkPrefixValue        = Build(() => BananoValue.GetValue() ? Protocols.Banano.LinkPrefix : Protocols.Nano.LinkPrefix);
+            ProtocolValue          = Build(() => Banano ? nameof(Protocols.Banano) : nameof(Protocols.Nano));
+            LinkPrefixValue        = Build(() => Banano ? Protocols.Banano.LinkPrefix : Protocols.Nano.LinkPrefix);
+            AccountValue           = Build(() => new Account(Seed, 0, Prefix));
         }
 
         private static IDictionary<string, string> GetEnvironmentVariables()

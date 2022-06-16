@@ -12,13 +12,11 @@ namespace NanoPingPong
     public class WrappedAccount
     {
 
-        private Account Account { get; }
         private RpcClients Clients { get; }
         private IContext Context { get; }
 
-        public WrappedAccount(Account account, RpcClients clients, IContext context)
+        public WrappedAccount(RpcClients clients, IContext context)
         {
-            Account = account;
             Clients = clients;
             Context = context;
         }
@@ -62,7 +60,7 @@ namespace NanoPingPong
                 await CacheSendWork();
             }
 
-            var pending = await Clients.Node.PendingBlocksAsync(Account.Address, int.MaxValue);
+            var pending = await Clients.Node.PendingBlocksAsync(Context.Account.Address, int.MaxValue);
             var blocks = pending?.PendingBlocks?.Select(block => block.Value) ?? Enumerable.Empty<ReceivableBlock>();
             foreach (var block in blocks)
             {
@@ -98,7 +96,7 @@ namespace NanoPingPong
                 await CacheReceiveWork();
             }
             Log("Processing ping.");
-            var receive = Block.CreateReceiveBlock(Account, block, _cache.Work);
+            var receive = Block.CreateReceiveBlock(Context.Account, block, _cache.Work);
             await Clients.Node.ProcessAsync(receive);
             await CacheSendWork();
         }
@@ -111,7 +109,7 @@ namespace NanoPingPong
             }
             Log("Processing pong.");
             var send = Block.CreateSendBlock(
-                Account,
+                Context.Account,
                 sender,
                 new Amount(nano),
                 _cache.Work);
@@ -133,9 +131,9 @@ namespace NanoPingPong
 
         private async Task<string> GenerateWork(string difficulty)
         {
-            await Clients.Node.UpdateAccountAsync(Account);
+            await Clients.Node.UpdateAccountAsync(Context.Account);
             var work = await Clients.WorkServer.WorkGenerateAsync(
-                Account.Opened ? Account.Frontier : Account.PublicKey.BytesToHex(),
+                Context.Account.Opened ? Context.Account.Frontier : Context.Account.PublicKey.BytesToHex(),
                 difficulty
             );
             return work?.Work;

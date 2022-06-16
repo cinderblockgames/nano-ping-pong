@@ -24,7 +24,7 @@ namespace NanoPingPong.Web.Pages
         public IActionResult OnGetAddress()
         {
             // Default to 0.01 XNO or 0.1 BAN for ease of use.
-            return GenerateQRCode($"{Context.LinkPrefix}{Context.Address}?amount=10000000000000000000000000000");
+            return GenerateQRCode($"{Context.LinkPrefix}{Context.Account.Address}?amount=10000000000000000000000000000");
         }
 
         public IActionResult OnGetDonations()
@@ -38,7 +38,7 @@ namespace NanoPingPong.Web.Pages
             var code = new PngByteQRCode(data);
             var qr = code.GetGraphic(
                 (int)Math.Ceiling((decimal)150 / (decimal)data.ModuleMatrix.Count) + 1,
-                drawQuietZones: false);
+                drawQuietZones: true);
             return File(qr, "image/png");
         }
 
