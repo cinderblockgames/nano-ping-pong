@@ -49,7 +49,7 @@ services:
     ... clipped for brevity ...
     
   ping:
-    image: 'cinderblockgames/nano-ping-pong:1.0.0'
+    image: 'cinderblockgames/nano-ping-pong:#.#.#'
     secrets:
       - banano-ping.seed
     volumes:
@@ -105,7 +105,7 @@ services:
     ... clipped for brevity ...
     
   ping-listener:
-    image: 'cinderblockgames/nano-ping-pong:1.0.0'
+    image: 'cinderblockgames/nano-ping-pong:#.#.#'
     command: dotnet /app/listener/NanoPingPong.dll
     secrets:
       - banano-ping.seed
@@ -123,7 +123,7 @@ services:
       replicas: 1
     
   ping-web:
-    image: 'cinderblockgames/nano-ping-pong:1.0.0'
+    image: 'cinderblockgames/nano-ping-pong:#.#.#'
     command: dotnet /app/web/NanoPingPong.Web.dll
     secrets:
       - banano-ping.seed
