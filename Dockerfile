@@ -39,4 +39,5 @@ ENV TickSeconds=1
 ENV Node=
 ENV WorkServer=
 
-ENTRYPOINT [ "docker-entrypoint.sh" ]
+ENTRYPOINT [ "sh" ]
+CMD [ "docker-entrypoint.sh" ]
