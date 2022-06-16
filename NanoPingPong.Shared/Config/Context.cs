@@ -88,7 +88,11 @@ namespace NanoPingPong.Shared.Config
         {
             if (Env.ContainsKey(name))
             {
-                return Env[name];
+                var value = Env[name];
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    return value;
+                }
             }
             return null;
         }
