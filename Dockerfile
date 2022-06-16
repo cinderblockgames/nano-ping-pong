@@ -22,7 +22,7 @@ COPY --from=build-env /app/NanoPingPong.Web/out .
 # Ending on /app/web because the web app needs it.
 
 RUN apt-get update && apt-get install -y curl libgdiplus \
-    && chmod +x docker-entrypoint.sh
+    && chmod +x /app/docker-entrypoint.sh
 
 VOLUME /run/logs
 
