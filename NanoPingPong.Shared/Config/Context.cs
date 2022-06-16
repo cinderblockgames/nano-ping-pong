@@ -15,6 +15,7 @@ namespace NanoPingPong.Shared.Config
         public string LogFile => LogFileValue.GetValue();
         public string Seed => SeedValue.GetValue();
         public int TickMilliseconds => TickMillisecondsValue.GetValue();
+        public bool CacheWork => CacheWorkValue.GetValue();
         public string Node => NodeValue.GetValue();
         public string WorkServer => WorkServerValue.GetValue();
         public string Prefix => PrefixValue.GetValue();
@@ -32,6 +33,7 @@ namespace NanoPingPong.Shared.Config
         private JustInTimeValue<string> LogFileValue { get; }
         private JustInTimeValue<string> SeedValue { get; }
         private JustInTimeValue<int> TickMillisecondsValue { get; }
+        private JustInTimeValue<bool> CacheWorkValue { get; }
         private JustInTimeValue<string> NodeValue { get; }
         private JustInTimeValue<string> WorkServerValue { get; }
         private JustInTimeValue<string> PrefixValue { get; }
@@ -52,6 +54,7 @@ namespace NanoPingPong.Shared.Config
             LogFileValue           = Build(() => Locations.Log);
             SeedValue              = Build(() => JObject.Parse(File.ReadAllText(Env[Names.SeedFile])).ToObject<NanoSeed>().Seed);
             TickMillisecondsValue  = Build(() => int.Parse(Env[Names.TickSeconds]) * 1000);
+            CacheWorkValue         = Build(() => bool.Parse(Env[Names.CacheWork]));
             NodeValue              = Build(() => Env[Names.Node]);
             WorkServerValue        = Build(() => Env[Names.WorkServer]);
             PrefixValue            = Build(() => Banano ? Protocols.Banano.Prefix : Protocols.Nano.Prefix);
@@ -60,7 +63,7 @@ namespace NanoPingPong.Shared.Config
             DonationAddressValue   = Build(() => SafeEnv(Names.DonationAddress));
             ProtocolValue          = Build(() => Banano ? nameof(Protocols.Banano) : nameof(Protocols.Nano));
             LinkPrefixValue        = Build(() => Banano ? Protocols.Banano.LinkPrefix : Protocols.Nano.LinkPrefix);
-            LinkValue              = Build(() => $"{LinkPrefix}{Account.Address}?amount=10000000000000000000000000000"); // Default to 0.01 XNO or 0.1 BAN for ease of use.
+            LinkValue              = Build(() => $"{LinkPrefix}{Account.Address}?amount={Env[Names.DefaultRaw]}");
             DonationLinkValue      = Build(() => $"{LinkPrefix}{DonationAddress}");
             AccountValue           = Build(() => new Account(Seed, 0, Prefix));
         }

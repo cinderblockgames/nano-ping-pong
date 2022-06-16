@@ -34,10 +34,14 @@ ENV ASPNETCORE_URLS=http://+:2022
 ENV Context=nano
 ENV SeedFile=/run/secrets/nano-ping.seed
 ENV TickSeconds=1
+ENV Cache=true
+ENV DefaultRaw=10000000000000000000000000000 # Default to 0.01 XNO or 0.1 BAN for ease of use.
 
 # required
 ENV Node=
 ENV WorkServer=
 
-ENTRYPOINT [ "sh" ]
-CMD [ "docker-entrypoint.sh" ]
+# Can separate the two by overriding the command with one of the below:
+# dotnet /app/listener/NanoPingPong.dll
+# dotnet /app/web/NanoPingPong.Web.dll
+CMD [ "." "docker-entrypoint.sh" ]

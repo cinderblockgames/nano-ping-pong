@@ -8,6 +8,8 @@
             public const string Context = "Context";
             public const string SeedFile = "SeedFile";
             public const string TickSeconds = "TickSeconds";
+            public const string CacheWork = "CacheWork";
+            public const string DefaultRaw = "DefaultRaw";
             public const string Node = "Node";
             public const string WorkServer = "WorkServer";
             public const string DonationAddress = "DonationAddress";

@@ -35,7 +35,10 @@ namespace NanoPingPong
                         _running = true;
                         try
                         {
-                            Process().GetAwaiter().GetResult();
+                            // Nano requires a more powerful work server, so add some caching to help it along.
+                            // I believe transactions won't need PoW eventually, so this will simplify then.
+                            var process = (Context.Banano || Context.CacheWork) ? Process() : ProcessWithCaching();
+                            process.GetAwaiter().GetResult();
                         }
                         catch (Exception ex)
                         {
@@ -48,39 +51,18 @@ namespace NanoPingPong
                     }
                 }
             }
-
         }
-
-        private Cache _cache;
 
         private async Task Process()
         {
-            if (_cache == null || !_cache.Sendable)
-            {
-                await CacheSendWork();
-            }
-
             var pending = await Clients.Node.PendingBlocksAsync(Context.Account.Address, int.MaxValue);
             var blocks = pending?.PendingBlocks?.Select(block => block.Value) ?? Enumerable.Empty<ReceivableBlock>();
             foreach (var block in blocks)
             {
-                Log("Ping received.");
                 try
                 {
-                    if (Amount.FromRaw(block.Amount).Nano <= 1)
-                    {
-                        await Return(block.Source, BigInteger.Parse(block.Amount));
-                        await Receive(block);
-                    }
-                    else
-                    {
-                        await Receive(block);
-                        await Return(block.Source, BigInteger.Parse(block.Amount));
-                    }
-                    if (_cache == null || !_cache.Sendable)
-                    {
-                        await CacheSendWork();
-                    }
+                    await Receive(block);
+                    await Return(block.Source, BigInteger.Parse(block.Amount));
                 }
                 catch (Exception ex)
                 {
@@ -91,42 +73,20 @@ namespace NanoPingPong
 
         private async Task Receive(ReceivableBlock block)
         {
-            if (_cache == null)
-            {
-                await CacheReceiveWork();
-            }
-            Log("Processing ping.");
-            var receive = Block.CreateReceiveBlock(Context.Account, block, _cache.Work);
+            Log("Ping");
+            var work = await GenerateWork(Context.ReceiveDifficulty);
+            var receive = Block.CreateReceiveBlock(Context.Account, block, work);
             await Clients.Node.ProcessAsync(receive);
             await CacheSendWork();
         }
 
-        public async Task Return(string sender, BigInteger nano)
+        public async Task Return(string sender, BigInteger raw)
         {
-            if (_cache == null || !_cache.Sendable)
-            {
-                await CacheSendWork();
-            }
-            Log("Processing pong.");
-            var send = Block.CreateSendBlock(
-                Context.Account,
-                sender,
-                new Amount(nano),
-                _cache.Work);
+            Log("Pong");
+            var work = await GenerateWork(Context.SendDifficulty);
+            var send = Block.CreateSendBlock(Context.Account, sender, new Amount(raw), work);
             await Clients.Node.ProcessAsync(send);
             await CacheReceiveWork();
-        }
-
-        private async Task CacheReceiveWork()
-        {
-            _cache = new Cache(await GenerateWork(Context.ReceiveDifficulty), false);
-            Log("Ready to process ping.");
-        }
-
-        private async Task CacheSendWork()
-        {
-            _cache = new Cache(await GenerateWork(Context.SendDifficulty), true);
-            Log("Ready to pong.");
         }
 
         private async Task<string> GenerateWork(string difficulty)
@@ -148,6 +108,86 @@ namespace NanoPingPong
             catch { }
         }
 
+        #region " Cached "
+
+        private Cache _cache;
+
+        private async Task ProcessWithCaching()
+        {
+            if (_cache == null || !_cache.Sendable)
+            {
+                await CacheSendWork();
+            }
+
+            var pending = await Clients.Node.PendingBlocksAsync(Context.Account.Address, int.MaxValue);
+            var blocks = pending?.PendingBlocks?.Select(block => block.Value) ?? Enumerable.Empty<ReceivableBlock>();
+            foreach (var block in blocks)
+            {
+                Log("Ping received.");
+                try
+                {
+                    if (Amount.FromRaw(block.Amount).Nano <= 1)
+                    {
+                        await ReturnWithCaching(block.Source, BigInteger.Parse(block.Amount));
+                        await ReceiveWithCaching(block);
+                    }
+                    else
+                    {
+                        await ReceiveWithCaching(block);
+                        await ReturnWithCaching(block.Source, BigInteger.Parse(block.Amount));
+                    }
+                    if (_cache == null || !_cache.Sendable)
+                    {
+                        await CacheSendWork();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log(ex.Message);
+                }
+            }
+        }
+
+        private async Task ReceiveWithCaching(ReceivableBlock block)
+        {
+            if (_cache == null)
+            {
+                await CacheReceiveWork();
+            }
+            Log("Processing ping.");
+            var receive = Block.CreateReceiveBlock(Context.Account, block, _cache.Work);
+            await Clients.Node.ProcessAsync(receive);
+            await CacheSendWork();
+        }
+
+        public async Task ReturnWithCaching(string sender, BigInteger raw)
+        {
+            if (_cache == null || !_cache.Sendable)
+            {
+                await CacheSendWork();
+            }
+            Log("Processing pong.");
+            var send = Block.CreateSendBlock(
+                Context.Account,
+                sender,
+                new Amount(raw),
+                _cache.Work);
+            await Clients.Node.ProcessAsync(send);
+            await CacheReceiveWork();
+        }
+
+        private async Task CacheReceiveWork()
+        {
+            _cache = new Cache(await GenerateWork(Context.ReceiveDifficulty), false);
+            Log("Ready to process ping.");
+        }
+
+        private async Task CacheSendWork()
+        {
+            _cache = new Cache(await GenerateWork(Context.SendDifficulty), true);
+            Log("Ready to pong.");
+        }
+
         private class Cache
         {
             public string Work { get; }
@@ -158,6 +198,8 @@ namespace NanoPingPong
                 Sendable = sendable;
             }
         }
+
+        #endregion
 
     }
 }
