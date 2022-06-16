@@ -21,7 +21,8 @@ COPY --from=build-env /app/NanoPingPong.Web/out .
 WORKDIR /app
 COPY docker-entrypoint.sh .
 
-RUN apt-get update && apt-get install -y curl libgdiplus
+RUN apt-get update && apt-get install -y curl libgdiplus \
+    && chmod +x docker-entrypoint.sh
 
 VOLUME /run/logs
 
