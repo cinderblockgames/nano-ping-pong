@@ -35,7 +35,8 @@ ENV Context=nano
 ENV SeedFile=/run/secrets/nano-ping.seed
 ENV TickSeconds=1
 ENV Cache=true
-ENV DefaultRaw=10000000000000000000000000000 # Default to 0.01 XNO or 0.1 BAN for ease of use.
+ENV DefaultRaw=10000000000000000000000000000
+#   ^ Default to 0.01 XNO or 0.1 BAN for ease of use.
 
 # required
 ENV Node=
