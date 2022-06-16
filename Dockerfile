@@ -13,13 +13,13 @@ RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 
+WORKDIR /app
+COPY docker-entrypoint.sh .
 WORKDIR /app/listener
 COPY --from=build-env /app/NanoPingPong/out .
 WORKDIR /app/web
 COPY --from=build-env /app/NanoPingPong.Web/out .
-
-WORKDIR /app
-COPY docker-entrypoint.sh .
+# Ending on /app/web because the web app needs it.
 
 RUN apt-get update && apt-get install -y curl libgdiplus \
     && chmod +x docker-entrypoint.sh
@@ -45,4 +45,4 @@ ENV WorkServer=
 # Can separate the two by overriding the command with one of the below:
 # dotnet /app/listener/NanoPingPong.dll
 # dotnet /app/web/NanoPingPong.Web.dll
-CMD [ "sh", "docker-entrypoint.sh" ]
+CMD [ "sh", "/app/docker-entrypoint.sh" ]
