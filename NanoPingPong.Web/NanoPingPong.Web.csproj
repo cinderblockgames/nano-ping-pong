@@ -23,10 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\NanoPingPong.Shared\NanoPingPong.Shared.csproj" />
   </ItemGroup>
 

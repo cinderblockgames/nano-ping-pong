@@ -1,4 +1,4 @@
-﻿@page "{handler?}"
+﻿@page
 @model NanoPingPong.Web.Pages.IndexModel
 
 <html lang="en">
@@ -119,7 +119,7 @@
       <p>Send a small transaction to the address below and watch it returned to you in real-time.</p>
       <p>
         <a href="@Model.Context.Link">
-          <img src="/Address" />
+          <img src="/QR/Address" />
           <br>Tap to open @(Model.Context.Banano ? "Kalium" : "Natrium")
         </a>
       </p>
@@ -130,7 +130,7 @@
           <small>
             Donations for running this service are accepted here:
             <a href="@Model.Context.DonationLink">
-              <br><img src="/Donations" />
+              <br><img src="/QR/Donations" />
               <br>Tap to open @(Model.Context.Banano ? "Kalium" : "Natrium")
             </a>
           </small>
