@@ -1,18 +1,48 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0 as build-env
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as build-env
 
 WORKDIR /app
 COPY ./ ./
+RUN dotnet restore
 
 WORKDIR /app/NanoPingPong
-RUN dotnet restore
+RUN dotnet publish -c Release -o out
+
+WORKDIR /app/NanoPingPong.Web
 RUN dotnet publish -c Release -o out
 
 
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+
+WORKDIR /app/listener
+COPY --from=build-env /app/NanoPingPong/out .
+WORKDIR /app/web
+COPY --from=build-env /app/NanoPingPong.Web/out .
 
 WORKDIR /app
-COPY --from=build-env /app/NanoPingPong/out .
+COPY docker-entrypoint.sh .
 
-ENTRYPOINT [ "dotnet" ]
+RUN apt-get update && apt-get install -y curl libgdiplus \
+    && chmod +x /app/docker-entrypoint.sh
 
-CMD [ "NanoPingPong.dll" ]
+VOLUME /run/logs
+
+# optional
+ENV DonationAddress=
+
+# required but defaulted
+ENV ASPNETCORE_URLS=http://+:2022
+ENV Context=nano
+ENV SeedFile=/run/secrets/nano-ping.seed
+ENV TickSeconds=1
+ENV Cache=true
+ENV DefaultRaw=10000000000000000000000000000
+#   ^ Default to 0.01 XNO or 0.1 BAN for ease of use.
+
+# required
+ENV Node=
+ENV WorkServer=
+
+# Can separate the two by overriding the command with one of the below:
+# dotnet /app/listener/NanoPingPong.dll
+# dotnet /app/web/NanoPingPong.Web.dll
+CMD [ "sh", "/app/docker-entrypoint.sh" ]

@@ -1,26 +1,20 @@
 ﻿using System;
 using System.Timers;
+using NanoPingPong.Shared.Config;
 
 namespace NanoPingPong
 {
     public class Listener : IDisposable
     {
 
-        private WrappedAccount Account { get; }
-        public Listener(WrappedAccount account)
-        {
-            Account = account;
-        }
+        private Timer Timer { get; }
 
-        private Timer Timer { get; set; }
-        public void Start(TimeSpan interval)
+        public Listener(WrappedAccount account, IContext context)
         {
-            if (Timer == null)
-            {
-                Timer = new Timer(interval.TotalMilliseconds);
-                Timer.Elapsed += (_, _) => Account.Tick();
-                Timer.Start();
-            }
+            Timer = new Timer(context.TickMilliseconds);
+            Timer.Elapsed += (_, _) => account.Tick();
+            Timer.Start();
+            Console.WriteLine($"Listening to {context.Account.Address}");
         }
 
         public void Dispose()
@@ -29,6 +23,7 @@ namespace NanoPingPong
             {
                 Timer.Stop();
             }
+            GC.SuppressFinalize(this);
         }
 
     }

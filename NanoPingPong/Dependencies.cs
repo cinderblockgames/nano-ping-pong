@@ -1,8 +1,7 @@
-﻿using System.IO;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Nano.Net;
-using Newtonsoft.Json.Linq;
-using static NanoPingPong.Constants;
+using NanoPingPong.Shared.Config;
+using SharedDependencies = NanoPingPong.Shared.Config.Dependencies;
 
 namespace NanoPingPong
 {
@@ -11,16 +10,17 @@ namespace NanoPingPong
 
         public static IServiceCollection AddDependencies(this IServiceCollection services)
         {
-            services.AddSingleton(provider =>
-                new RpcClients
-                {
-                    Node = new RpcClient(Locations.Node),
-                    WorkServer = new RpcClient(Locations.WorkServer)
-                }
-            );
+            SharedDependencies.AddDependencies(services);
 
-            var seed = JObject.Parse(File.ReadAllText(Locations.Seed)).ToObject<NanoSeed>().Seed;
-            services.AddSingleton(provider => new Account(seed, 0));
+            services.AddSingleton(provider =>
+            {
+                var env = provider.GetRequiredService<IContext>();
+                return new RpcClients
+                {
+                    Node = new RpcClient(env.Node),
+                    WorkServer = new RpcClient(env.WorkServer)
+                };
+            });
 
             services.AddSingleton<WrappedAccount>();
             services.AddSingleton<Listener>();
