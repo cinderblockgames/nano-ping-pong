@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y curl libgdiplus
 VOLUME /run/logs
 
 # optional
-ENV DonationAddress
+ENV DonationAddress=
 
 # required but defaulted
 ENV ASPNETCORE_URLS=http://+:2022
@@ -35,7 +35,7 @@ ENV SeedFile=/run/secrets/nano-ping.seed
 ENV TickSeconds=1
 
 # required
-ENV Node
-ENV WorkServer
+ENV Node=
+ENV WorkServer=
 
 ENTRYPOINT [ "docker-entrypoint.sh" ]
