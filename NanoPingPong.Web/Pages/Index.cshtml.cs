@@ -23,22 +23,19 @@ namespace NanoPingPong.Web.Pages
 
         public IActionResult OnGetAddress()
         {
-            // Default to 0.01 XNO or 0.1 BAN for ease of use.
-            return GenerateQRCode($"{Context.LinkPrefix}{Context.Account.Address}?amount=10000000000000000000000000000");
+            return GenerateQRCode(Context.Link);
         }
 
         public IActionResult OnGetDonations()
         {
-            return GenerateQRCode($"{Context.LinkPrefix}{Context.DonationAddress}");
+            return GenerateQRCode(Context.DonationLink, true);
         }
 
-        private FileContentResult GenerateQRCode(string value)
+        private FileContentResult GenerateQRCode(string value, bool small = false)
         {
             var data = QRCodeGenerator.GenerateQrCode(value, QRCodeGenerator.ECCLevel.Q);
             var code = new PngByteQRCode(data);
-            var qr = code.GetGraphic(
-                (int)Math.Ceiling((decimal)150 / (decimal)data.ModuleMatrix.Count) + 1,
-                drawQuietZones: true);
+            var qr = code.GetGraphic(small ? 2 : 3);
             return File(qr, "image/png");
         }
 

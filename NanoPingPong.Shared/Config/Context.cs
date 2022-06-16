@@ -23,6 +23,8 @@ namespace NanoPingPong.Shared.Config
         public string DonationAddress => DonationAddressValue.GetValue();
         public string Protocol => ProtocolValue.GetValue();
         public string LinkPrefix => LinkPrefixValue.GetValue();
+        public string Link => LinkValue.GetValue();
+        public string DonationLink => DonationLinkValue.GetValue();
         public Account Account => AccountValue.GetValue();
 
         private IDictionary<string, string> Env { get; }
@@ -38,13 +40,15 @@ namespace NanoPingPong.Shared.Config
         private JustInTimeValue<string> DonationAddressValue { get; }
         private JustInTimeValue<string> ProtocolValue { get; }
         private JustInTimeValue<string> LinkPrefixValue { get; }
+        private JustInTimeValue<string> LinkValue { get; }
+        private JustInTimeValue<string> DonationLinkValue { get; }
         private JustInTimeValue<Account> AccountValue { get; }
 
         public Context()
         {
             Env = GetEnvironmentVariables();
 
-            BananoValue            = Build(() => string.Equals(Env[Names.Context], nameof(Protocols.Banano)));
+            BananoValue            = Build(() => string.Equals(Env[Names.Context], nameof(Protocols.Banano), StringComparison.OrdinalIgnoreCase));
             LogFileValue           = Build(() => Locations.Log);
             SeedValue              = Build(() => JObject.Parse(File.ReadAllText(Env[Names.SeedFile])).ToObject<NanoSeed>().Seed);
             TickMillisecondsValue  = Build(() => int.Parse(Env[Names.TickSeconds]) * 1000);
@@ -53,9 +57,11 @@ namespace NanoPingPong.Shared.Config
             PrefixValue            = Build(() => Banano ? Protocols.Banano.Prefix : Protocols.Nano.Prefix);
             SendDifficultyValue    = Build(() => Banano ? Protocols.Banano.SendDifficulty : Protocols.Nano.SendDifficulty);
             ReceiveDifficultyValue = Build(() => Banano ? Protocols.Banano.ReceiveDifficulty : Protocols.Nano.ReceiveDifficulty);
-            DonationAddressValue   = Build(() => Env[Names.DonationAddress]);
+            DonationAddressValue   = Build(() => SafeEnv(Names.DonationAddress));
             ProtocolValue          = Build(() => Banano ? nameof(Protocols.Banano) : nameof(Protocols.Nano));
             LinkPrefixValue        = Build(() => Banano ? Protocols.Banano.LinkPrefix : Protocols.Nano.LinkPrefix);
+            LinkValue              = Build(() => $"{LinkPrefix}{Account.Address}?amount=10000000000000000000000000000"); // Default to 0.01 XNO or 0.1 BAN for ease of use.
+            DonationLinkValue      = Build(() => $"{LinkPrefix}{DonationAddress}");
             AccountValue           = Build(() => new Account(Seed, 0, Prefix));
         }
 
@@ -73,6 +79,15 @@ namespace NanoPingPong.Shared.Config
         private static JustInTimeValue<T> Build<T>(Func<T> getter)
         {
             return new JustInTimeValue<T>(getter);
+        }
+
+        private string SafeEnv(string name)
+        {
+            if (Env.ContainsKey(name))
+            {
+                return Env[name];
+            }
+            return null;
         }
 
     }

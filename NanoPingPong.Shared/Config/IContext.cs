@@ -5,6 +5,7 @@ namespace NanoPingPong.Shared.Config
     public interface IContext
     {
 
+        bool Banano { get; }
         string LogFile { get; }
         string Seed { get; }
         int TickMilliseconds { get; }
@@ -15,7 +16,8 @@ namespace NanoPingPong.Shared.Config
         string ReceiveDifficulty { get; }
         string DonationAddress { get; }
         string Protocol { get; }
-        string LinkPrefix { get; }
+        string Link { get; }
+        string DonationLink { get; }
         Account Account { get; }
 
     }
