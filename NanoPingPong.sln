@@ -1,21 +1,22 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32413.511
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoPingPong", "NanoPingPong.csproj", "{04D075A4-9556-49C3-8320-4539B384E07A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoPingPong", "NanoPingPong\NanoPingPong.csproj", "{04D075A4-9556-49C3-8320-4539B384E07A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D80524BD-D14A-470B-AA0D-A249E2769042}"
 	ProjectSection(SolutionItems) = preProject
-		..\.gitignore = ..\.gitignore
-		..\Dockerfile = ..\Dockerfile
-		..\LICENSE = ..\LICENSE
-		..\README.md = ..\README.md
+		.gitignore = .gitignore
+		docker-entrypoint.sh = docker-entrypoint.sh
+		Dockerfile = Dockerfile
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoPingPong.Shared", "..\NanoPingPong.Shared\NanoPingPong.Shared.csproj", "{E01D6101-7CC8-4FB2-B57F-564496C82B30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoPingPong.Shared", "NanoPingPong.Shared\NanoPingPong.Shared.csproj", "{E01D6101-7CC8-4FB2-B57F-564496C82B30}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoPingPong.Web", "..\NanoPingPong.Web\NanoPingPong.Web.csproj", "{238AF6C6-5E9D-4D04-9D55-4B1AE456576E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoPingPong.Web", "NanoPingPong.Web\NanoPingPong.Web.csproj", "{238AF6C6-5E9D-4D04-9D55-4B1AE456576E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
