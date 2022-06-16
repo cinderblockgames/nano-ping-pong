@@ -14,6 +14,7 @@ namespace NanoPingPong
             Timer = new Timer(context.TickMilliseconds);
             Timer.Elapsed += (_, _) => account.Tick();
             Timer.Start();
+            Console.WriteLine($"Listening to {context.Account.Address}");
         }
 
         public void Dispose()
