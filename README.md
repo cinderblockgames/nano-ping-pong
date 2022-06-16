@@ -133,7 +133,6 @@ services:
       - 'DonationAddress=ban_3s9c389jsom8gqsp8zbeampfi7kpipdnzmp1rkbnzstemursdsopsz3h8mg1'
     networks:
       - traefik
-      - banano
     deploy:
       mode: replicated
       replicas: 2
