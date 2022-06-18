@@ -37,7 +37,8 @@ namespace NanoPingPong
                         {
                             // Nano requires a more powerful work server, so add some caching to help it along.
                             // I believe transactions won't need PoW eventually, so this will simplify then.
-                            var process = (Context.Banano || Context.CacheWork) ? Process() : ProcessWithCaching();
+                            var cache = Context.CacheWork && !Context.Banano; // Only cache for Nano - and only when requested.
+                            var process = cache ? ProcessWithCaching() : Process();
                             process.GetAwaiter().GetResult();
                         }
                         catch (Exception ex)
