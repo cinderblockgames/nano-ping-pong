@@ -78,7 +78,6 @@ namespace NanoPingPong
             var work = await GenerateWork(Context.ReceiveDifficulty);
             var receive = Block.CreateReceiveBlock(Context.Account, block, work);
             await Clients.Node.ProcessAsync(receive);
-            await CacheSendWork();
         }
 
         public async Task Return(string sender, BigInteger raw)
@@ -87,7 +86,6 @@ namespace NanoPingPong
             var work = await GenerateWork(Context.SendDifficulty);
             var send = Block.CreateSendBlock(Context.Account, sender, new Amount(raw), work);
             await Clients.Node.ProcessAsync(send);
-            await CacheReceiveWork();
         }
 
         private async Task<string> GenerateWork(string difficulty)
