@@ -10,6 +10,7 @@
 <script src="https://kit.fontawesome.com/c6fcb894f6.js" crossorigin="anonymous"></script>
 
 <title>@Model.Context.Protocol Demo :: Ping/Pong</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
 
 <style type="text/css">
   * {
@@ -92,11 +93,11 @@
     @if (Model.Context.Banano)
     {
       <text>
-      background: rgb(186,157,53);
-      background: linear-gradient(90deg, rgba(186,157,53,1) 0%, rgba(216,170,70,1) 35%, rgba(247,255,48,1) 100%);
+      background: rgb(155,196,62);
+      background: linear-gradient(90deg, rgba(155,196,62,1) 0%, rgba(247,255,48,1) 35%, rgba(247,255,48,1) 65%, rgba(128,74,21,1) 100%);
       </text>
     }
-    else
+    else // Nano
     {
       <text>
       background: rgb(32,32,76);
@@ -146,7 +147,7 @@
             <a href="https://kalium.banano.cc/">[Kalium Wallet]</a>
             <a href="https://banano.cc">[More about Banano]</a>
         }
-        else
+        else // Nano
         {
             <a href="https://natrium.io/">[Natrium Wallet]</a>
             <a href="https://nano.org">[More about Nano]</a>

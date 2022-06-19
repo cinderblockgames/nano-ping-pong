@@ -11,6 +11,7 @@ namespace NanoPingPong.Shared.Config
     internal class Context : IContext
     {
 
+        public bool Nano => !Banano;
         public bool Banano => BananoValue.GetValue();
         public string LogFile => LogFileValue.GetValue();
         public string Seed => SeedValue.GetValue();

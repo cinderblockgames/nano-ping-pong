@@ -5,6 +5,7 @@ namespace NanoPingPong.Shared.Config
     public interface IContext
     {
 
+        bool Nano { get; }
         bool Banano { get; }
         string LogFile { get; }
         string Seed { get; }
