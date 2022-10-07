@@ -16,9 +16,9 @@ namespace NanoPingPong.Shared.Config
         public string LogFile => LogFileValue.GetValue();
         public string Seed => SeedValue.GetValue();
         public int TickMilliseconds => TickMillisecondsValue.GetValue();
-        public bool CacheWork => CacheWorkValue.GetValue();
         public string Node => NodeValue.GetValue();
         public string WorkServer => WorkServerValue.GetValue();
+        public string N2ApiKey => N2ApiKeyValue.GetValue();
         public string Prefix => PrefixValue.GetValue();
         public string SendDifficulty => SendDifficultyValue.GetValue();
         public string ReceiveDifficulty => ReceiveDifficultyValue.GetValue();
@@ -34,9 +34,9 @@ namespace NanoPingPong.Shared.Config
         private JustInTimeValue<string> LogFileValue { get; }
         private JustInTimeValue<string> SeedValue { get; }
         private JustInTimeValue<int> TickMillisecondsValue { get; }
-        private JustInTimeValue<bool> CacheWorkValue { get; }
         private JustInTimeValue<string> NodeValue { get; }
         private JustInTimeValue<string> WorkServerValue { get; }
+        private JustInTimeValue<string> N2ApiKeyValue { get; }
         private JustInTimeValue<string> PrefixValue { get; }
         private JustInTimeValue<string> SendDifficultyValue { get; }
         private JustInTimeValue<string> ReceiveDifficultyValue { get; }
@@ -55,9 +55,9 @@ namespace NanoPingPong.Shared.Config
             LogFileValue           = Build(() => Locations.Log);
             SeedValue              = Build(() => JObject.Parse(File.ReadAllText(Env[Names.SeedFile])).ToObject<NanoSeed>().Seed);
             TickMillisecondsValue  = Build(() => int.Parse(Env[Names.TickSeconds]) * 1000);
-            CacheWorkValue         = Build(() => bool.Parse(Env[Names.CacheWork]));
             NodeValue              = Build(() => Env[Names.Node]);
             WorkServerValue        = Build(() => Env[Names.WorkServer]);
+            N2ApiKeyValue          = Build(() => File.ReadAllText(Env[Names.N2ApiKeyFile]));
             PrefixValue            = Build(() => Banano ? Protocols.Banano.Prefix : Protocols.Nano.Prefix);
             SendDifficultyValue    = Build(() => Banano ? Protocols.Banano.SendDifficulty : Protocols.Nano.SendDifficulty);
             ReceiveDifficultyValue = Build(() => Banano ? Protocols.Banano.ReceiveDifficulty : Protocols.Nano.ReceiveDifficulty);
