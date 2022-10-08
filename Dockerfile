@@ -40,7 +40,6 @@ ENV DefaultRaw=10000000000000000000000000000
 
 # required
 ENV Node=
-ENV WorkServer=
 
 # Can separate the two by overriding the command with one of the below:
 # dotnet /app/listener/NanoPingPong.dll

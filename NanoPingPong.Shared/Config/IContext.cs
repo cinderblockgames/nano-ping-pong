@@ -10,9 +10,8 @@ namespace NanoPingPong.Shared.Config
         string LogFile { get; }
         string Seed { get; }
         int TickMilliseconds { get; }
-        bool CacheWork { get; }
         string Node { get; }
-        string WorkServer { get; }
+        string N2ApiKey { get; }
         string Prefix { get; }
         string SendDifficulty { get; }
         string ReceiveDifficulty { get; }

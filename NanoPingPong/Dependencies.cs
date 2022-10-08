@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using N2.Pow;
 using Nano.Net;
 using NanoPingPong.Shared.Config;
 using SharedDependencies = NanoPingPong.Shared.Config.Dependencies;
@@ -15,11 +16,18 @@ namespace NanoPingPong
             services.AddSingleton(provider =>
             {
                 var env = provider.GetRequiredService<IContext>();
-                return new RpcClients
-                {
-                    Node = new RpcClient(env.Node),
-                    WorkServer = new RpcClient(env.WorkServer)
-                };
+                return new RpcClient(env.Node);
+            });
+
+            services.AddSingleton(provider =>
+            {
+                var env = provider.GetRequiredService<IContext>();
+                return new WorkServer(
+                    new WorkServerOptions
+                    {
+                        ApiKey = env.N2ApiKey
+                    }
+                );
             });
 
             services.AddSingleton<WrappedAccount>();
