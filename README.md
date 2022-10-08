@@ -93,6 +93,8 @@ networks:
 secrets:
   banano-ping.seed:
     external: true
+  n2-api.key:
+    external: true
 ```
 
 ### Separated
