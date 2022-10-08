@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 using DockerHax.IO;
 using N2.Pow;
@@ -85,6 +86,7 @@ namespace NanoPingPong
             Log("Pong");
             var work = await GenerateWork(Context.SendDifficulty);
             var send = Block.CreateSendBlock(Context.Account, sender, new Amount(raw), work);
+            Thread.Sleep(TimeSpan.FromSeconds(30)); // Artificial delay for boolazed.
             await Rpc.ProcessAsync(send);
         }
 
