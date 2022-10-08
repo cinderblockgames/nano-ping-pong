@@ -13,13 +13,13 @@ namespace NanoPingPong
     public class WrappedAccount
     {
 
-        private RpcClients Clients { get; }
+        private RpcClient Rpc { get; }
         private WorkServer WorkServer { get; }
         private IContext Context { get; }
 
-        public WrappedAccount(RpcClients clients, WorkServer workServer, IContext context)
+        public WrappedAccount(RpcClient rpc, WorkServer workServer, IContext context)
         {
-            Clients = clients;
+            Rpc = rpc;
             WorkServer = workServer;
             Context = context;
         }
@@ -56,7 +56,7 @@ namespace NanoPingPong
 
         private async Task Process()
         {
-            var pending = await Clients.Node.PendingBlocksAsync(Context.Account.Address, int.MaxValue);
+            var pending = await Rpc.PendingBlocksAsync(Context.Account.Address, int.MaxValue);
             var blocks = pending?.PendingBlocks?.Select(block => block.Value) ?? Enumerable.Empty<ReceivableBlock>();
             foreach (var block in blocks)
             {
@@ -77,7 +77,7 @@ namespace NanoPingPong
             Log("Ping");
             var work = await GenerateWork(Context.ReceiveDifficulty);
             var receive = Block.CreateReceiveBlock(Context.Account, block, work);
-            await Clients.Node.ProcessAsync(receive);
+            await Rpc.ProcessAsync(receive);
         }
 
         public async Task Return(string sender, BigInteger raw)
@@ -85,12 +85,12 @@ namespace NanoPingPong
             Log("Pong");
             var work = await GenerateWork(Context.SendDifficulty);
             var send = Block.CreateSendBlock(Context.Account, sender, new Amount(raw), work);
-            await Clients.Node.ProcessAsync(send);
+            await Rpc.ProcessAsync(send);
         }
 
         private async Task<string> GenerateWork(string difficulty)
         {
-            await Clients.Node.UpdateAccountAsync(Context.Account);
+            await Rpc.UpdateAccountAsync(Context.Account);
             var hash = Context.Account.Opened ? Context.Account.Frontier : Context.Account.PublicKey.BytesToHex();
             var response = await WorkServer.GenerateWork(hash);
             if (response.ErrorResult != null)

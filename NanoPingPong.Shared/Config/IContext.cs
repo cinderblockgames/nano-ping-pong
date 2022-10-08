@@ -11,7 +11,6 @@ namespace NanoPingPong.Shared.Config
         string Seed { get; }
         int TickMilliseconds { get; }
         string Node { get; }
-        string WorkServer { get; }
         string N2ApiKey { get; }
         string Prefix { get; }
         string SendDifficulty { get; }

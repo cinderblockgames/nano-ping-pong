@@ -16,11 +16,7 @@ namespace NanoPingPong
             services.AddSingleton(provider =>
             {
                 var env = provider.GetRequiredService<IContext>();
-                return new RpcClients
-                {
-                    Node = new RpcClient(env.Node),
-                    WorkServer = new RpcClient(env.WorkServer)
-                };
+                return new RpcClient(env.Node);
             });
 
             services.AddSingleton(provider =>
